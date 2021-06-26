@@ -1,18 +1,29 @@
 import React, {Component} from 'react';
 import './login.less'
 import { Form, Icon, Input, Button, } from 'antd';
+
+import {reqLogin} from '../../api'
 import logo from './images/logo.png'
 
 
 class Login extends Component {
     handleSubmit = e => {
+        // 阻止事件的默认行为
         e.preventDefault();
-        this.props.form.validateFields((err, values) => {
+        // 对所有表单字段进行检验
+        this.props.form.validateFields(async (err, values) => {
+            // 检验成功
             if (!err) {
-                console.log('发送ajax请求', values);
+                // 请求登陆
+                const {username,password} = values
+                const result = await reqLogin(username,password)
+                console.log('请求成功',result.data)
             }
         });
     };
+    /*
+  对密码进行自定义验证
+  */
     validatePWD = (rule, value, callback) => {
         if (!value) callback("用户不能为空!")
         if (value.length < 4) callback("用户名最少4位,最多12位!")
@@ -33,8 +44,9 @@ class Login extends Component {
                     <h2>登陆系统</h2>
                     <Form onSubmit={this.handleSubmit} className="login-form">
                         <Form.Item>
-                            {getFieldDecorator('username', {
-                                initialValue:'admin',
+                            {getFieldDecorator('username', {// 配置对象: 属性名是特定的一些名称
+                                // 声明式验证: 直接使用别人定义好的验证规则进行验证
+                                initialValue:'admin',// 初始值
                                 rules: [
                                     { required: true,whitespace:true, message: '用户不能为空!' },
                                     { min: 4, message: '用户名最少4位,最多12位!' },
