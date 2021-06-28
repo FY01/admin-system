@@ -1,9 +1,14 @@
 import React, {Component} from 'react';
-import './login.less'
+import {Redirect} from "react-router-dom";
 import { Form, Icon, Input, Button,message } from 'antd';
 
 import {reqLogin} from '../../api'
+import memoryUtils from "../../utils/memoryUtils";
+import storageUtils from "../../utils/storageUtils";
+
+import './login.less'
 import logo from './images/logo.png'
+
 
 
 class Login extends Component {
@@ -19,7 +24,12 @@ class Login extends Component {
                 const result = await reqLogin(username,password)
                 // console.log('请求成功',result)
                 if (result.status === 0) {
-                    console.log('登陆成功')
+                    message.success('登陆成功')
+
+                    const user = result.data
+                    memoryUtils.user = user
+                    storageUtils.saveUser(user)
+
                     //登陆之后不需要回退到login界面，用replace()
                     this.props.history.replace('/')
                 }else if (result.status === 1){
@@ -40,6 +50,12 @@ class Login extends Component {
     }
 
     render() {
+        // 判断是否已登录（内存中是否有user），假如已登录就直接跳转到admin
+        const user = memoryUtils.user
+        if (user && user._id){
+            return <Redirect to = '/'/>
+        }
+
         const { getFieldDecorator } = this.props.form;
         return (
             <div className="login">
