@@ -13,6 +13,7 @@ import Home from "../home/Home";
 import Product from "../product/Product";
 import Role from "../role/Role";
 import Users from "../users/Users";
+import './admin.less'
 
 import memoryUtils from '../../utils/memoryUtils'
 const { Footer, Sider, Content } = Layout;
@@ -29,8 +30,8 @@ export default class Admin extends Component {
                     <LeftNav></LeftNav>
                 </Sider>
                 <Layout>
-                    <Header>Header</Header>
-                    <Content style={{backgroundColor:'white'}}>
+                    <Header></Header>
+                    <Content className={'content'}>
                         <Switch>
                             <Route path = '/home' component = {Home}/>
                             <Route path = '/categories' component = {Categories}/>
