@@ -14,6 +14,18 @@ import {message} from "antd";
 const BASE = ''
 // 请求登陆
 export const reqLogin = (username,password) => ajax(BASE + '/login',{username,password},'POST')
+
+// 获取一级/二级分类的列表
+export const reqCategories = (parentId) => ajax(BASE + '/manage/category/list', {parentId})
+
+// 添加分类
+export const reqAddCategory = (categoryName, parentId) => ajax(BASE + '/manage/category/add', {categoryName, parentId}, 'POST')
+
+// 更新分类
+export const reqUpdateCategory = ({categoryId, categoryName}) => ajax(BASE + '/manage/category/update', {categoryId, categoryName}, 'POST')
+
+
+
 // 请求增加用户
 export const reqAddUser = (user) => ajax(BASE + '/manage/user/add',user,'POST')
 
