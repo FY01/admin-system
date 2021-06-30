@@ -13,7 +13,7 @@ class UpdateForm extends Component {
         categoryName :PropTypes.string.isRequired,
         setForm: PropTypes.func.isRequired
     }
-
+    // 传递from对象给父组件
     UNSAFE_componentWillMount() {
         this.props.setForm(this.props.form)
     }
@@ -29,8 +29,8 @@ class UpdateForm extends Component {
                         initialValue:categoryName,
                         rules: [
                             { required: true,whitespace:true, message: '分类名称不能为空!' },
-                            { min: 1, message: '分类名称最少1位,最多6位!' },
-                            { max: 6, message: '分类名称最少1位,最多6位!' },
+                            { min: 1, message: '分类名称最少1位,最多8位!' },
+                            { max: 8, message: '分类名称最少1位,最多8位!' },
                             // { pattern: /^[a-zA-Z0-9_]+$/, message: '分类名称只能是字母数字和下划线！' }
                         ]
                     })(
