@@ -78,6 +78,7 @@ class Header extends Component {
         const username = memoryUtils.user.username
         // 从状态中获取天气状态
         const {currentTime,dayPictureUrl,weather} = this.state
+        // const {currentTime} = this.state
         //根据当前路径拿到需要显示的title
         const title = this.getTitle()
         return (

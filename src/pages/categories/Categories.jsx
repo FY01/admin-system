@@ -7,19 +7,23 @@ import {
     Table,
     Button,
     Icon,
-    message
+    message,
+    Modal
 } from 'antd'
 import LinkButton from "../../components/linkButton";
-import {reqCategories} from "../../api";
+import {reqCategories,reqUpdateCategory} from "../../api";
+import AddForm from "./AddForm";
+import UpdateForm from "./UpdateForm";
 
 export default class Categories extends Component {
 
     state = {
         categories:[],  //一级分类列表
         subCategories:[], //二级分类列表
-        parentId:'0', // 父级菜单的id
-        parentName:'',
-        isLoading:false  //是否正在获取一级列表中
+        parentId:'0', // 当前需要显示的父级菜单的id
+        parentName:'', // 当前需要显示的父级菜单的名称
+        isLoading:false,  //是否正在获取一级列表中
+        showStatus: 0   //添加、修改的对话框显示状态：0：都不显示，1：显示添加，2：显示修改
     }
 
     // 初始化table所有列的数组
@@ -37,7 +41,7 @@ export default class Categories extends Component {
                 // 这里的render函数可以传递一个参数代表当前列
                 render: (category) => (
                     <span>
-                        <LinkButton>修改分类</LinkButton>
+                        <LinkButton onClick = {() => {this.showUpdateCategoryModal(category)}}>修改分类</LinkButton>
                         {/*点击显示二级列表，
                         向事件回调函数传递参数：先定义一个匿名函数，在函数调用处理的函数并传入数据*/}
                         {
@@ -97,6 +101,51 @@ export default class Categories extends Component {
         }
     }
 
+    // 显示添加对话框
+    showAddCategoryModal = () => {
+        this.setState({
+            showStatus:1
+        })
+    }
+    // 显示更新修改对话框
+    showUpdateCategoryModal = (category) => {
+        this.category = category  //把当前点击的分类保存起来
+        this.setState({
+            showStatus:2
+        })
+    }
+    //取消显示对话框
+    handleCancel = () => {
+        this.setState({
+            showStatus:0
+        })
+        // 清除输入框数据
+        this.form.resetFields()
+    }
+    //添加分类
+    addCategory = () => {
+
+    }
+    // 更新修改分类
+    updateCategory = async () => {
+        //1.隐藏修改更新对话框
+        this.setState({
+            showStatus:0
+        })
+            // 准备数据
+        const categoryId = this.category._id
+        const categoryName = this.form.getFieldValue('categoryName')
+
+            // 清除输入框数据
+        this.form.resetFields()
+        // 2.发请求跟新分类菜单
+        const  result = await reqUpdateCategory({categoryId, categoryName})
+        if (result.status === 0){
+            // 3.重新显示分类菜单
+            this.getCategories()
+        }
+
+    }
     // 为第一次render做数据准备
     UNSAFE_componentWillMount() {
         this.initColumns()
@@ -108,7 +157,8 @@ export default class Categories extends Component {
     }
 
     render() {
-        const {categories,isLoading,parentId,parentName,subCategories} = this.state
+        const {categories,isLoading,parentId,parentName,subCategories,showStatus} = this.state
+        const category = this.category || {}
         // card的左侧
         const title = parentId === '0'?'一级分类列表':(
             <span>
@@ -119,7 +169,7 @@ export default class Categories extends Component {
         )
         // card的右侧
         const extra = (
-            <Button type={'primary'} >
+            <Button onClick={this.showAddCategoryModal} type={'primary'} >
                 <Icon type={'plus'}/>
                添加
             </Button>)
@@ -139,6 +189,26 @@ export default class Categories extends Component {
                     //配置分页参数，和是否显示快速跳转页面
                     pagination={{defaultPageSize: 5, showQuickJumper: true}}
                 />
+                <Modal
+                    title="添加分类"
+                    visible={showStatus===1}
+                    onOk={this.addCategory}
+                    onCancel={this.handleCancel}
+                >
+                    <AddForm
+                        categories = {categories}
+                        parentId = {parentId}
+                    />
+                </Modal>
+
+                <Modal
+                    title="更新分类"
+                    visible={showStatus===2}
+                    onOk={this.updateCategory}
+                    onCancel={this.handleCancel}
+                >
+                    <UpdateForm categoryName = {category.name}  setForm = {(form) => {this.form = form}}/>
+                </Modal>
             </Card>
         );
     }
