@@ -28,7 +28,7 @@ export const reqUpdateCategory = ({categoryId, categoryName}) => ajax(BASE + '/m
 // searchType：搜索的类型：productName、productDesc
 export const reqProducts = (pageNum,pageSize) => ajax(BASE + '/manage/product/list',{pageNum,pageSize})
 
-// 搜索商品分页列表
+// 请求搜索商品分页列表
 // searchType 搜索的类型：productName、productDesc
 export const reqSearchProducts = ({pageNum, pageSize,searchName,searchType}) => ajax(BASE + '/manage/product/search',
     {
@@ -37,6 +37,9 @@ export const reqSearchProducts = ({pageNum, pageSize,searchName,searchType}) => 
         //加[]表示不是searchType字符串，而是实参searchType
         [searchType]:searchName
     })
+// 请求获取一级、二级分类的列表
+// export const reqCategory = (categoryId) => ajax(BASE + '/manage/category/info', {categoryId})
+export const reqCategory = (categoryId) => ajax(BASE + '/manage/category/info', {categoryId})
 
 // 请求增加用户
 export const reqAddUser = (user) => ajax(BASE + '/manage/user/add',user,'POST')
