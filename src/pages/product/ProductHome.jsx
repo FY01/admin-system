@@ -6,9 +6,9 @@ import {
     Table,
     Icon,
     Input
-}from 'antd'
+} from 'antd'
 import LinkButton from "../../components/linkButton";
-import {reqProducts,reqSearchProducts} from "../../api";
+import {reqProducts,reqSearchProducts,reqUpdateStatus} from "../../api";
 import {PAGE_SIZE} from '../../utils/constant'
 import memoryUtils from "../../utils/memoryUtils";
 /*
@@ -22,7 +22,7 @@ export default class ProductHome extends Component {
         total: 0,  //商品的总数量
         products:[], //商品的数组
         searchName:'',//搜索的名字
-        searchType:'productName'    //搜索的类型：productName、productDesc
+        searchType:'productName',    //搜索的类型：productName、productDesc
     }
 
     // 初始化列的标签
@@ -47,27 +47,32 @@ export default class ProductHome extends Component {
             {
                 title: '状态',
                 width:100,
-                dataIndex: 'status',
-                render:(status) => {
+                // dataIndex: 'status',
+                render:(product) => {
+                    const {status,_id} = product
                     return (
                         <span>
-                            <Button type={'primary'}>下架</Button>
-                            <span>在售</span>
+                            <Button
+                                type={'primary'}
+                                onClick={() => {this.updateStatus(_id,status === 1 ? 2 : 1)} }
+                            >
+                                {status === 1 ?'下架' : '上架'}
+                            </Button>
+                            <span>{status === 1 ?'在售' : '已下架'}</span>
                         </span>
-
                     )
                 }
             },
             {
                 title: '操作',
                 width: 100,
-                dataIndex: '',
+                // dataIndex: '',
                 render:(product) => {
                     return (
                         <span>
                             {/*将product对象通过state传递个目标路由组件*/}
                             <LinkButton onClick = {() => {this.goToProductDetails(product)}}>详情</LinkButton>
-                            <LinkButton>修改</LinkButton>
+                            <LinkButton onClick = {() => {this.props.history.push('/product/addUpdate',product)}}>修改</LinkButton>
                         </span>
                     )
                 }
@@ -75,6 +80,17 @@ export default class ProductHome extends Component {
         ];
     }
 
+    // 更新上架下架状态
+    updateStatus = async (productId,status) => {
+        const result = await reqUpdateStatus(productId,status)
+        if (result.status === 0){
+            // message.success('更新状态成功')
+            // 重新获取商品列表
+            this.getProducts(this.pageNum)
+        }
+    }
+
+    //跳转到详情页
     goToProductDetails = (product) => {
         const {searchName} = this.state
         this.props.history.push('/product/details',{product})
@@ -84,6 +100,7 @@ export default class ProductHome extends Component {
     // 获取商品数据列表
     getProducts = async (pageNum,pageSize=PAGE_SIZE) => {
         this.setState({isLoading:true})
+        this.pageNum = pageNum
         const {searchName,searchType} = this.state
 
         let result
@@ -148,7 +165,7 @@ export default class ProductHome extends Component {
             </span>
         )
         const extra = (
-            <Button type={'primary'}>
+            <Button type={'primary'} onClick={() => this.props.history.push('/product/addUpdate')}>
                 <Icon type={'plus'}/>
                 添加商品
             </Button>

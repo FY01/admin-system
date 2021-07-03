@@ -8,6 +8,7 @@ import PropTypes from 'prop-types'
 const Item = Form.Item
 const Option = Select.Option
 
+
 class AddForm extends Component {
     static propTypes = {
         parentId:PropTypes.string.isRequired,
@@ -42,7 +43,7 @@ class AddForm extends Component {
                         initialValue:'',
                         rules: [
                             { required: true,whitespace:true, message: '分类名称不能为空!' },
-                            { min: 1, message: '分类名称最少1位,最多8位!' },
+                            { min: 2, message: '分类名称最少1位,最多8位!' },
                             { max: 8, message: '分类名称最少1位,最多8位!' },
                             // { pattern: /^[a-zA-Z0-9_]+$/, message: '分类名称只能是字母数字和下划线！' }
                         ]

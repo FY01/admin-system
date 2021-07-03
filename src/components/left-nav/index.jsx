@@ -74,7 +74,8 @@ class LeftNav extends Component {
     // reduce(),和递归组合
     getMenuListReduce = (menuList) => {
         //先把当前被选中组件的路径拿到
-        const path = this.props.location.pathname
+        let path = this.props.location.pathname
+
 
         return menuList.reduce((pre,item) => {
             if (!item.children){
@@ -87,8 +88,8 @@ class LeftNav extends Component {
                     </Menu.Item>
                 ))
             }else {
-                //如果子菜单的路径跟被选中的菜单一致，则这个父菜单需要被打开状态
-                const cItem = item.children.find(cItem => cItem.key === path)
+                //如果子菜单的路径跟被选中的菜单一致，则这个父菜单需要被打开状态(不需要完全一致，因为切换到父菜单的子路由组件时，父菜单也需要被打开)
+                const cItem = item.children.find(cItem => path.indexOf(cItem.key) === 0)
                 //拿到这个父菜单的path
                 if (cItem){
                     this.openKey = item.key
@@ -117,7 +118,12 @@ class LeftNav extends Component {
     }
 
     render() {
-        const path = this.props.location.pathname
+        let path = this.props.location.pathname
+
+        // 解决切换product的子组件，左侧导航条没有被选上的bug
+        if (path.indexOf('/product') === 0){
+            path = '/product'
+        }
         return (
             <div  className={'left-nav'}>
                 <Link to = '/' className="left-nav-header">
