@@ -44,6 +44,9 @@ export const reqCategory = (categoryId) => ajax(BASE + '/manage/category/info', 
 //上架：1，下架：2
 export const reqUpdateStatus = (productId,status) => ajax(BASE + '/manage/product/updateStatus',{productId,status},'POST')
 
+//请求删除图片
+export const reqDeleteImg = (name) => ajax(BASE + "/manage/img/delete" , {name},'POST')
+
 // 请求增加用户
 export const reqAddUser = (user) => ajax(BASE + '/manage/user/add',user,'POST')
 

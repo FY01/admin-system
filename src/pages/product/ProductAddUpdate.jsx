@@ -7,12 +7,13 @@ import {
     Input,
     Form,
     Cascader,
-    Upload,
+    // Upload,
     Icon,
-    Button, message
+    Button,
 } from "antd";
 import LinkButton from "../../components/linkButton";
 import {reqCategories} from "../../api";
+import PicturesWall from "./PicturesWall";
 
 const Item = Form.Item
 const { TextArea } = Input;
@@ -22,6 +23,13 @@ class ProductAddUpdate extends Component {
     state = {
         options:[]
     };
+
+    //1.创建用来保存ref标识的标签对象的容器
+    constructor(props) {
+        super(props);
+
+        this.pictureWall = React.createRef()
+    }
 
     //回到ProductHome
     goBackProductHome = () => {
@@ -83,13 +91,33 @@ class ProductAddUpdate extends Component {
     /*
     初始化Options
      */
-    initOptions = (categories) => {
+    initOptions = async (categories) => {
         // 根据categories生成options
         const options = categories.map( c => ({
             value: c._id,
             label: c.name,
             isLeaf: false,
         }))
+
+        // 获取二级状态列表
+        const {isUpdate,product} = this
+        const {pCategoryId} = product
+        if (isUpdate && pCategoryId !== '0'){
+            // 获取对应的二级下拉列表
+            const subCategories = await this.getCategories(pCategoryId)
+            // 生成新的二级下拉列表的options
+            const childOptions = subCategories.map(c => ({
+                value: c._id,
+                label: c.name,
+                isLeaf: true,
+            }))
+            // 找到当前商品对应的一级option对象
+            const targetOption = options.find(option => option.value === pCategoryId)
+            // 关联对应的一级option上
+            targetOption.children = childOptions
+        }
+
+        //更新options的状态
         this.setState({options})
     }
 
@@ -97,18 +125,22 @@ class ProductAddUpdate extends Component {
     submit = () => {
         this.props.form.validateFields((error,values) => {
             if (!error){
-                message.success('提交成功')
-                console.log(values)
+
+            //3.通过ref容器调用子组件的方法
+                const imgs = this.pictureWall.current.getimgs()
+
+                console.log(imgs)
             }
         })
     }
 
     UNSAFE_componentWillMount() {
-        // 去除带过来的product
+        // 取ProductHome带过来的product
         const product = this.props.location.state
         //保存是否是update的标识,如果product即表示是从修改来的
         this.isUpdate = !!product
 
+        // 保存带过来的product，如果是增加过来的则为{}
         this.product = product || {}
 
     }
@@ -120,6 +152,15 @@ class ProductAddUpdate extends Component {
     render() {
         const {getFieldDecorator} = this.props.form
         const {isUpdate,product} = this
+        const categoryIds = []
+        const {categoryId,pCategoryId,imgs} = product
+        if (pCategoryId === '0'){
+            categoryIds.push(categoryId)
+        }else {
+            // 先显示父父分类，再显示子分类
+            categoryIds.push(pCategoryId)
+            categoryIds.push(categoryId)
+        }
         const title = (
             <span>
                 <LinkButton>
@@ -162,7 +203,7 @@ class ProductAddUpdate extends Component {
                                 initialValue:product.desc,
                                 rules:[
                                     {required:true,whitespace:true,message:'商品描述必须输入'},
-                                    { min: 6, message: '商品描述最少6位,最多50位!' },
+                                    { min: 3, message: '商品描述最少6位,最多50位!' },
                                     { max: 50, message: '商品描述最少6位,最多50位!' }
                                 ]
                             })(<TextArea placeholder="请输入商品描述" autoSize={{ minRows: 3, maxRows: 5 }} />)
@@ -173,27 +214,32 @@ class ProductAddUpdate extends Component {
                             getFieldDecorator('price',{
                                 initialValue:product.price,
                                 rules:[
-                                    {required:true,whitespace:true,message:'价格必须输入'},
+                                    {required:true,message:'价格必须输入'},
                                     {validator:this.validatePrice},// 自定义验证规则
                                 ]
-                            })(<Input placeholder={'请输入商品价格，类型为数值'} type={'number'} addonAfter="元" ></Input>)
+                            })(<Input placeholder={'请输入商品价格，类型为数值'} type='number' addonAfter="元" />)
                         }
                     </Item>
                     <Item label={'商品分类'}>
                         {
-                            getFieldDecorator('categoryIds',{
-                                initialValue:[],
-                                rules:[
-                                    {required:true},
+                            getFieldDecorator('categoryIds', {
+                                initialValue: categoryIds,
+                                rules: [
+                                    {required: true, message: '必须指定商品分类'},
                                 ]
-                            })(<Cascader
-                                options={this.state.options} //需要显示的列表数据数组
-                                loadData={this.loadData}    //当选择某个列表项，加载下一级列表的监听回调
-                            />)
+                            })(
+                                <Cascader
+                                    placeholder='请指定商品分类'
+                                    options={this.state.options}  //需要显示的列表数据数组
+                                    loadData={this.loadData} //当选择某个列表项, 加载下一级列表的监听回调
+                                />
+                            )
                         }
                     </Item>
                     <Item label={'商品图片'}>
-                        <div>商品图片</div>
+                        {/*2.交给组价一个ref容器，会自动将组件的实例塞到容器里*/}
+                        {/*把product的imgs 交给pictureWall组件*/}
+                        <PicturesWall ref = {this.pictureWall} imgs = {imgs} />
                     </Item>
                     <Item label={'商品详情'}>
                         <div>商品详情</div>
@@ -210,3 +256,7 @@ class ProductAddUpdate extends Component {
 }
 export default Form.create()(ProductAddUpdate)
 
+/*
+子组件调用父组件的方法：将父组件的方法以函数属性传递给子组件，子组件就可以调用
+父组件调用子组件的方法：在父组件中通过ref得到子组件标签对象（也就是组件对象），调用其方法
+ */

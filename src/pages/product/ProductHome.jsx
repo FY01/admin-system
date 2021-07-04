@@ -68,6 +68,7 @@ export default class ProductHome extends Component {
                 width: 100,
                 // dataIndex: '',
                 render:(product) => {
+                    // console.log(product)
                     return (
                         <span>
                             {/*将product对象通过state传递个目标路由组件*/}
