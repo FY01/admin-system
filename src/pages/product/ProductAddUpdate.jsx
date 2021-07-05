@@ -9,11 +9,12 @@ import {
     Cascader,
     // Upload,
     Icon,
-    Button,
+    Button, message,
 } from "antd";
 import LinkButton from "../../components/linkButton";
-import {reqCategories} from "../../api";
+import {reqCategories,reqAddOrUpdateProduct} from "../../api";
 import PicturesWall from "./PicturesWall";
+import RichTextEditor from "./RichTextEditor";
 
 const Item = Form.Item
 const { TextArea } = Input;
@@ -29,6 +30,7 @@ class ProductAddUpdate extends Component {
         super(props);
 
         this.pictureWall = React.createRef()
+        this.richTextEditor = React.createRef()
     }
 
     //回到ProductHome
@@ -123,13 +125,34 @@ class ProductAddUpdate extends Component {
 
     //提交
     submit = () => {
-        this.props.form.validateFields((error,values) => {
+        this.props.form.validateFields( async (error,values) => {
             if (!error){
-
-            //3.通过ref容器调用子组件的方法
-                const imgs = this.pictureWall.current.getimgs()
-
-                console.log(imgs)
+            //1:收据数据，并生成product对象
+                const {name,desc,price,categoryIds} = values
+                //3.通过ref容器调用子组件的方法
+                const imgs = this.pictureWall.current.getimgs()   //获取照片名字数组
+                const detail = this.richTextEditor.current.getDetail()  //获取富文本编辑返回的HTML字符串
+                let pCategoryId,categoryId
+                if (categoryIds.length === 1){
+                    pCategoryId = '0'
+                    categoryId = categoryIds[0]
+                }else {
+                    pCategoryId = categoryIds[0]
+                    categoryId = categoryIds[1]
+                }
+                const product = {name,desc,price,imgs,detail,pCategoryId,categoryId}
+                if (this.isUpdate){
+                    product._id = this.product._id
+                }
+            //2：发送请求增加或更新商品
+                const result = await reqAddOrUpdateProduct(product)
+            //3：根据请求结果操作
+                if (result.status === 0){
+                    message.success(`${this.isUpdate?'更新':'增加'}商品成功`)
+                    this.props.history.goBack()
+                }else{
+                    message.error(`${this.isUpdate?'更新':'增加'}商品失败`)
+                }
             }
         })
     }
@@ -153,7 +176,8 @@ class ProductAddUpdate extends Component {
         const {getFieldDecorator} = this.props.form
         const {isUpdate,product} = this
         const categoryIds = []
-        const {categoryId,pCategoryId,imgs} = product
+        const {categoryId,pCategoryId,imgs,detail} = product
+        // console.log(product)
         if (pCategoryId === '0'){
             categoryIds.push(categoryId)
         }else {
@@ -241,8 +265,23 @@ class ProductAddUpdate extends Component {
                         {/*把product的imgs 交给pictureWall组件*/}
                         <PicturesWall ref = {this.pictureWall} imgs = {imgs} />
                     </Item>
-                    <Item label={'商品详情'}>
-                        <div>商品详情</div>
+                    {/* 单独设置单个Item的样式
+                        labelCol: {
+                            xs: { span: 24 },
+                            sm: { span: 2 },
+                        },
+                        wrapperCol: {
+                            xs: { span: 24 },
+                            sm: { span: 8 },
+                        },
+                     */}
+                    <Item
+                        label={'商品详情'}
+                        labelCol = {{xs: { span: 24 }, sm: { span: 2 }}}
+                        wrapperCol = {{xs: { span: 24 }, sm: { span: 20 }}}
+                    >
+                        <RichTextEditor ref = {this.richTextEditor} detail = {detail}>
+                        </RichTextEditor>
                     </Item>
                     <Item >
                         <Button type={'primary'} onClick={this.submit}>

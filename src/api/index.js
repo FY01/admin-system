@@ -39,7 +39,6 @@ export const reqSearchProducts = ({pageNum, pageSize,searchName,searchType}) => 
     })
 // 请求获取一级、二级分类的列表
 export const reqCategory = (categoryId) => ajax(BASE + '/manage/category/info', {categoryId})
-
 //请求更新状态，对产品进行上架、下架处理
 //上架：1，下架：2
 export const reqUpdateStatus = (productId,status) => ajax(BASE + '/manage/product/updateStatus',{productId,status},'POST')
@@ -47,6 +46,8 @@ export const reqUpdateStatus = (productId,status) => ajax(BASE + '/manage/produc
 //请求删除图片
 export const reqDeleteImg = (name) => ajax(BASE + "/manage/img/delete" , {name},'POST')
 
+//请求增加/更新商品
+export const reqAddOrUpdateProduct = (product) => ajax(BASE + '/manage/product/' + (product._id?'update':'add'),product,'POST')
 // 请求增加用户
 export const reqAddUser = (user) => ajax(BASE + '/manage/user/add',user,'POST')
 

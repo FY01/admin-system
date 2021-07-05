@@ -27,10 +27,11 @@ export default class ProductDetails extends Component {
     //获取一级、二级分类名称
     getCategory = async () => {
         const {categoryId,pCategoryId} = this.props.location.state.product
+        // console.log(categoryId,typeof categoryId)
         if (pCategoryId === '0') {
-            const result = await reqCategory({categoryId})
-            let secondCategory = result.data.name
-            this.setState({secondCategory})
+            const result = await reqCategory(categoryId)
+            let firstCategory = result.data.name
+            this.setState({firstCategory})
         }else {
 
             /* 一个await是在前一个请求成功接收到请求再发的，效率低
