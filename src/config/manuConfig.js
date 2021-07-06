@@ -1,5 +1,3 @@
-//动态生成左侧导航条的数据
-
 const menuList = [
     {
         title: '首页', // 菜单标题名称
@@ -14,7 +12,7 @@ const menuList = [
         children: [ // 子菜单列表
             {
                 title: '品类管理',
-                key: '/categories',
+                key: '/category',
                 icon: 'bars'
             },
             {
@@ -27,8 +25,8 @@ const menuList = [
 
     {
         title: '用户管理',
-        key: '/users',
-        icon: 'users'
+        key: '/user',
+        icon: 'user'
     },
     {
         title: '角色管理',

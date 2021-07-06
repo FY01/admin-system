@@ -7,9 +7,9 @@ export function formatDateUtils(time){
     const date = new Date(time)
     // return '2021-6-28 23:43:07'
     if (date.getSeconds() >= 10)
-        return `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()} - ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+        return `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
     else
-        return `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()} - ${date.getHours()}:${date.getMinutes()}:0${date.getSeconds()}`
+        return `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:0${date.getSeconds()}`
 
 
 }
