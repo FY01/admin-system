@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Form, Input} from "antd";
+import PropTypes from 'prop-types'
 /*
 添加分类的组件
  */
@@ -10,6 +11,7 @@ const Item = Form.Item
 
 class AddForm extends Component {
     static propTypes = {
+        setForm:PropTypes.func.isRequired
     }
 
     // 传递from对象给父组件

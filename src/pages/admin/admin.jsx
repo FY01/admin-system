@@ -5,14 +5,14 @@ import { Layout } from 'antd';
 import Header from "../../components/header";
 import LeftNav from "../../components/left-nav";
 
-import Categories from "../categories/Categories";
+import Category from "../category/Category";
 import Bar from "../charts/Bar";
 import Line from "../charts/Line";
 import Pie from "../charts/Pie"
 import Home from "../home/Home";
 import Product from "../product/Product";
 import Role from "../role/Role";
-import Users from "../users/Users";
+import User from "../user/User";
 import './admin.less'
 
 import memoryUtils from '../../utils/memoryUtils'
@@ -34,9 +34,9 @@ export default class Admin extends Component {
                     <Content className={'content'}>
                         <Switch>
                             <Route path = '/home' component = {Home}/>
-                            <Route path = '/categories' component = {Categories}/>
+                            <Route path = '/category' component = {Category}/>
                             <Route path = '/product' component = {Product}/>
-                            <Route path = '/users' component = {Users}/>
+                            <Route path = '/user' component = {User}/>
                             <Route path = '/role' component = {Role}/>
                             <Route path = '/charts/bar' component = {Bar}/>
                             <Route path = '/charts/line' component = {Line}/>

@@ -42,10 +42,10 @@ class Login extends Component {
   对密码进行自定义验证
   */
     validatePWD = (rule, value, callback) => {
-        if (!value) callback("用户不能为空!")
-        if (value.length < 4) callback("用户名最少4位,最多12位!")
-        if (value.length > 12) callback("用户名最少4位,最多12位!")
-        if (!/^[a-zA-Z0-9_]+$/.test(value)) callback("用户名只能是字母数字和下划线！")
+        if (!value) callback("密码不能为空!")
+        if (value.length < 4) callback("密码是最少4位,最多12位的字母数字和下划线")
+        if (value.length > 12) callback("密码是最少4位,最多12位的字母数字和下划线")
+        if (!/^[a-zA-Z0-9_]+$/.test(value)) callback("密码只能是字母数字和下划线！")
         callback()
     }
 

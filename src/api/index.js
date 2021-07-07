@@ -57,9 +57,14 @@ export const reqAddRole = (roleName) => ajax(BASE + '/manage/role/add',{roleName
 //更新角色(给角色设置权限)
 export const reqUpdateRole = (role) => ajax(BASE + '/manage/role/update',role,'POST')
 
-// 请求增加用户
-export const reqAddUser = (user) => ajax(BASE + '/manage/user/add',user,'POST')
+//请求所有用户列表
+export const reqUsers = () => ajax(BASE + '/manage/user/list','GET')
 
+//请求删除用户
+export const reqDeleteUser = (userId) => ajax(BASE + '/manage/user/delete',{userId},'POST')
+
+// 请求增加、更新用户
+export const reqAddUpdateUser = (user) => ajax(BASE + '/manage/user/'+(user._id?'update':'add'),user,'POST')
 
 
 //请求天气预报，json请求接口请求函数

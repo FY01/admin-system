@@ -58,7 +58,8 @@ export default class AuthForm extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(nextProps, nextContext) {
-        const menus = nextProps.role.menu
+        // console.log(nextProps.role)
+        const menus = nextProps.role.menus
         this.setState({checkedKeys:menus})
     }
 

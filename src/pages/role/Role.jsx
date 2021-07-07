@@ -10,7 +10,7 @@ import {
 } from "antd";
 
 import {PAGE_SIZE} from "../../utils/constant";
-import {reqRoles,reqAddRole,reqUpdateRole} from "../../api";
+import {reqRoles, reqAddRole, reqUpdateRole } from "../../api";
 import AddForm from "./AddForm";
 import AuthForm from "./AuthForm";
 import memoryUtils from "../../utils/memoryUtils";
@@ -74,28 +74,34 @@ export default class Role extends Component {
     addRole = () => {
         //通过表单验证
         this.form.validateFields( async (error,value) => {
-            //拿到输入的值
-            const {roleName} = value
-            if (!error){
-                // 发请求增加角色
-                const result = await reqAddRole(roleName)
-                if (result.status === 0) {
-                    message.success('添加角色成功')
-                    const newRole = result.data
-                    // 新角色添加到角色列表中显示
-                    // this.setState({roles:[...this.state.roles,newRole]})
-                        //函数写法
-                    this.setState((state) => ({
+            // 验证用户名是否已存在（前台）
+            if (!this.state.roles.find((role) => role.name === value.roleName )){
+                //拿到输入的值
+                const {roleName} = value
+                if (!error){
+                    // 发请求增加角色
+                    const result = await reqAddRole(roleName)
+                    if (result.status === 0) {
+                        message.success('添加角色成功')
+                        const newRole = result.data
                         // 新角色添加到角色列表中显示
-                        roles:[...state.roles,newRole],
-                        // 隐藏Modal
-                        showAddStatus:false
-                    }))
-                }else {
-                    message.error('添加角色失败')
+                        // this.setState({roles:[...this.state.roles,newRole]})
+                        //函数写法
+                        this.setState((state) => ({
+                            // 新角色添加到角色列表中显示
+                            roles:[...state.roles,newRole],
+                            // 隐藏Modal
+                            showAddStatus:false
+                        }))
+                    }else {
+                        message.error('添加角色失败')
+                    }
                 }
+                this.form.resetFields()
+            }else {
+                message.error(`${value.name}已存在！请另外起一个角色名`)
             }
-            this.form.resetFields()
+
         })
     }
 
@@ -106,8 +112,9 @@ export default class Role extends Component {
             showAuthStatus:false
         })
         const {role} = this.state
-        const menu = this.authName.current.getMenu()
-        role.menu = menu
+        const menus = this.authName.current.getMenu()
+        // console.log( '接收到的',menus)
+        role.menus = menus
         role.auth_name = memoryUtils.user.username
         role.auth_time = Date.now()
         // debugger
