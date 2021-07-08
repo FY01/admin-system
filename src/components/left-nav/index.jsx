@@ -6,6 +6,7 @@ import { Menu, Icon } from 'antd';
 import './index.less'
 import logo from '../../assets/images/logo.png'
 import menuList from "../../config/manuConfig";
+import memoryUtils from "../../utils/memoryUtils";
 
 const { SubMenu } = Menu;
 
@@ -72,42 +73,66 @@ class LeftNav extends Component {
 
      */
     // reduce(),和递归组合
+
+    shouldShow = (item) => {
+        /*
+        1.用户是admin，应该显示组件，所有返回true
+        2.组件是公开的（isPublic），应该对所有用户显示
+        3.item的key值（路径）在用户的role的menus中找到，应该返回true
+        4.如果当前用户有item的子item的权限
+         */
+        const key = item.key
+        const {role,username} = memoryUtils.user
+        const menus = role.menus
+        if (username === 'admin' || item.isPublic || menus.indexOf(key) !== -1) {
+            return true
+        }else if (item.children){
+            // 4.如果当前用户有item的子item的权限
+            return !!item.children.find(cItem => menus.indexOf(cItem.key) !== -1)
+        }else{
+            return false
+        }
+    }
+
     getMenuListReduce = (menuList) => {
         //先把当前被选中组件的路径拿到
         let path = this.props.location.pathname
 
-
         return menuList.reduce((pre,item) => {
-            if (!item.children){
-                pre.push((
-                    <Menu.Item key={item.key}>
-                        <Link to = {item.key}>
-                            <Icon type={item.icon} />
-                            <span>{item.title}</span>
-                        </Link>
-                    </Menu.Item>
-                ))
-            }else {
-                //如果子菜单的路径跟被选中的菜单一致，则这个父菜单需要被打开状态(不需要完全一致，因为切换到父菜单的子路由组件时，父菜单也需要被打开)
-                const cItem = item.children.find(cItem => path.indexOf(cItem.key) === 0)
-                //拿到这个父菜单的path
-                if (cItem){
-                    this.openKey = item.key
-                }
+            //判断每个user应该显示那些组件
+            if (this.shouldShow(item)){
 
-                pre.push((
-                    <SubMenu
-                        key={item.key}
-                        title={
-                            <span>
+                if (!item.children){
+                    pre.push((
+                        <Menu.Item key={item.key}>
+                            <Link to = {item.key}>
+                                <Icon type={item.icon} />
+                                <span>{item.title}</span>
+                            </Link>
+                        </Menu.Item>
+                    ))
+                }else {
+                    //如果子菜单的路径跟被选中的菜单一致，则这个父菜单需要被打开状态(不需要完全一致，因为切换到父菜单的子路由组件时，父菜单也需要被打开)
+                    const cItem = item.children.find(cItem => path.indexOf(cItem.key) === 0)
+                    //拿到这个父菜单的path
+                    if (cItem){
+                        this.openKey = item.key
+                    }
+
+                    pre.push((
+                        <SubMenu
+                            key={item.key}
+                            title={
+                                <span>
                                 <Icon type={item.icon}/>
                                 <span>{item.title}</span>
                             </span>
-                        }
-                    >
-                        {this.getMenuListReduce(item.children)}
-                    </SubMenu>
-                ))
+                            }
+                        >
+                            {this.getMenuListReduce(item.children)}
+                        </SubMenu>
+                    ))
+                }
             }
             return pre
         },[])

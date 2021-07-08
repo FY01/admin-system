@@ -10,11 +10,12 @@ import {
 } from "antd";
 
 import {PAGE_SIZE} from "../../utils/constant";
-import {reqRoles, reqAddRole, reqUpdateRole } from "../../api";
+import {reqRoles, reqAddRole, reqUpdateRole, reqDeleteUser} from "../../api";
 import AddForm from "./AddForm";
 import AuthForm from "./AuthForm";
 import memoryUtils from "../../utils/memoryUtils";
 import {formatDateUtils} from "../../utils/formatDateUtils"
+import storageUtils from "../../utils/storageUtils";
 
 export default class Role extends Component {
 
@@ -121,10 +122,17 @@ export default class Role extends Component {
         const result = await reqUpdateRole(role)
         if (result.status === 0){
             message.success('更新角色成功')
-            this.setState({roles:[...this.state.roles]})
+            this.setState({roles: [...this.state.roles]})
+            //如果是更新自己的权限，强制退出，清理内存，并跳转到登陆页面
+            if (role._id === memoryUtils.user.role_id) {
+                memoryUtils.user = {}
+                storageUtils.removeUser()
+                this.props.history.replace('/login')
+            }
         }else {
             message.error('更新失败')
         }
+
     }
 
     // 为第一次render做数据准备
