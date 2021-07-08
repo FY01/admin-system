@@ -40,11 +40,14 @@ class Header extends Component {
         const path = this.props.location.pathname
         let title = ''
         menuList.forEach(item => {
+            // 如果当前item对象的key与path一样,item的title就是需要显示的title
             if (item.key === path){
                 title = item.title
             }else if (item.children){
-                const cItem = item.children.find(cItem => cItem.key === path)
+                // 在所有子item中查找匹配的(不用完全匹配，完全匹配会导致切换组件的子组件无法显示)
+                const cItem = item.children.find(cItem => path.indexOf(cItem.key)===0)
                 if (cItem){
+                     // 取出它的title
                     title = cItem.title
                 }
             }
@@ -78,6 +81,7 @@ class Header extends Component {
         const username = memoryUtils.user.username
         // 从状态中获取天气状态
         const {currentTime,dayPictureUrl,weather} = this.state
+        // const {currentTime} = this.state
         //根据当前路径拿到需要显示的title
         const title = this.getTitle()
         return (
