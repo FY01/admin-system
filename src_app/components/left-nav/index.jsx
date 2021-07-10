@@ -2,76 +2,22 @@
 import React, {Component} from 'react';
 import {Link,withRouter} from "react-router-dom";
 import { Menu, Icon } from 'antd';
+import {connect} from "react-redux";
+import PropTypes from 'prop-types'
 
 import './index.less'
 import logo from '../../assets/images/logo.png'
 import menuList from "../../config/manuConfig";
-import memoryUtils from "../../utils/memoryUtils";
+import {setHeadTitle} from "../../redux/actions";
 
 const { SubMenu } = Menu;
 
 class LeftNav extends Component {
-    //定义根据菜单列表数据动态生成菜单栏
-    // map(),和递归组合
-    /*
-    数据格式
-    {
-        title: '用户管理',
-        key: '/user',
-        icon: 'user'
-        children:[]  (subMenu 才有）
-    },
-    返回的格式
-    <Menu.Item key="/home">
-        <Link to = '/home'>
-            <Icon type="pie-chart" />
-            <span>首页</span>
-        </Link>
-    </Menu.Item>
-    或者
-    <SubMenu key="sub1"title={
-            <span>
-                <Icon type="mail" />
-                <span>商品</span>
-            </span>
-        }
-    >
-        <Menu.Item />
-    <SubMenu/>
-     */
-    // map(),和递归组合
-    /*
-
-    getMenuListMap = (menuList) => {
-        return menuList.map( item => {
-            if (!item.children){
-                return (
-                    <Menu.Item key={item.key}>
-                        <Link to = {item.key}>
-                            <Icon type={item.icon} />
-                            <span>{item.title}</span>
-                        </Link>
-                    </Menu.Item>
-                )
-            }else {
-                return(
-                    <SubMenu
-                        key={item.key}
-                        title={
-                            <span>
-                                <Icon type={item.icon}/>
-                                <span>{item.title}</span>
-                            </span>
-                        }
-                    >
-                        {this.getMenuListMap(item.children)}
-                    </SubMenu>
-                )
-            }
-        })
+    static propTypes = {
+        setHeadTitle:PropTypes.func.isRequired,
+        user:PropTypes.object.isRequired
     }
 
-     */
     // reduce(),和递归组合
 
     shouldShow = (item) => {
@@ -82,7 +28,7 @@ class LeftNav extends Component {
         4.如果当前用户有item的子item的权限
          */
         const key = item.key
-        const {role,username} = memoryUtils.user
+        const {role,username} = this.props.user
         const menus = role.menus
         if (username === 'admin' || item.isPublic || menus.indexOf(key) !== -1) {
             return true
@@ -103,8 +49,13 @@ class LeftNav extends Component {
             if (this.shouldShow(item)){
 
                 if (!item.children){
+                    // 判断是否是当前对应的item，
+                    if (item.key === path || path.indexOf(item.key) === 0){
+                        //如果是则更新当前redux的headTitle状态
+                        this.props.setHeadTitle(item.title)
+                    }
                     pre.push((
-                        <Menu.Item key={item.key}>
+                        <Menu.Item key={item.key} onClick={() => {this.props.setHeadTitle(item.title)}}>
                             <Link to = {item.key}>
                                 <Icon type={item.icon} />
                                 <span>{item.title}</span>
@@ -178,4 +129,7 @@ class LeftNav extends Component {
 withRouter 是一个高阶组件，接收一个非路由组件，返回一个新的路由组件，
 新的组件向非路由组件传递三个参数：history，location，match
  */
-export default withRouter(LeftNav)
+export default connect(
+    state => ({user:state.user}),
+    {setHeadTitle}
+)(withRouter(LeftNav))

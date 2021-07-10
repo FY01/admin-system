@@ -1,14 +1,11 @@
 import React, {Component} from 'react';
 import {Redirect} from "react-router-dom";
-import { Form, Icon, Input, Button,message } from 'antd';
-
-import {reqLogin} from '../../api'
-import memoryUtils from "../../utils/memoryUtils";
-import storageUtils from "../../utils/storageUtils";
+import {Form, Icon, Input, Button, message} from 'antd';
+import {connect} from 'react-redux'
 
 import './login.less'
 import logo from '../../assets/images/logo.png'
-
+import {login} from "../../redux/actions";
 
 
 class Login extends Component {
@@ -21,19 +18,12 @@ class Login extends Component {
             if (!err) {
                 // 请求登陆
                 const {username,password} = values
-                const result = await reqLogin(username,password)
-                // console.log('请求成功',result)
-                if (result.status === 0) {
-                    message.success('登陆成功')
+                this.props.login(username,password)
 
-                    const user = result.data
-                    memoryUtils.user = user
-                    storageUtils.saveUser(user)
-
-                    //登陆之后不需要回退到login界面，用replace()
-                    this.props.history.replace('/')
-                }else if (result.status === 1){
-                    message.error(result.msg)
+                //登陆失败的提示
+                const errMsg = this.props.user.errMsg
+                if (errMsg){
+                    message.error(errMsg)
                 }
             }
         });
@@ -50,11 +40,13 @@ class Login extends Component {
     }
 
     render() {
-        // 判断是否已登录（内存中是否有user），假如已登录就直接跳转到admin
-        const user = memoryUtils.user
+        // 判断是否已登录（redux中是否有user），假如已登录就直接跳转到admin
+        const user = this.props.user
         if (user && user._id){
-            return <Redirect to = '/'/>
+            return <Redirect to = '/home'/>
         }
+
+
 
         const { getFieldDecorator } = this.props.form;
         return (
@@ -109,7 +101,10 @@ class Login extends Component {
 }
 
 const WrappedLogin = Form.create({ name: 'normal_login' })(Login);
-export default WrappedLogin
+export default connect(
+    state => ({user:state.user}),
+    {login}
+)(WrappedLogin)
 
 
 

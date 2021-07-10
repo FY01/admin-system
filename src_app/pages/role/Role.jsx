@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-
 /*
 角色管理路由
  */
@@ -9,15 +8,17 @@ import {
     Table, Modal, message
 } from "antd";
 
+import {connect} from "react-redux";
+
+
 import {PAGE_SIZE} from "../../utils/constant";
-import {reqRoles, reqAddRole, reqUpdateRole, reqDeleteUser} from "../../api";
+import {reqRoles, reqAddRole, reqUpdateRole} from "../../api";
 import AddForm from "./AddForm";
 import AuthForm from "./AuthForm";
-import memoryUtils from "../../utils/memoryUtils";
 import {formatDateUtils} from "../../utils/formatDateUtils"
-import storageUtils from "../../utils/storageUtils";
+import {logout} from "../../redux/actions";
 
-export default class Role extends Component {
+class Role extends Component {
 
 
     constructor(props) {
@@ -116,19 +117,17 @@ export default class Role extends Component {
         const menus = this.authName.current.getMenu()
         // console.log( '接收到的',menus)
         role.menus = menus
-        role.auth_name = memoryUtils.user.username
+        role.auth_name = this.props.user.username
         role.auth_time = Date.now()
         // debugger
         const result = await reqUpdateRole(role)
         if (result.status === 0){
-            message.success('更新角色成功')
             this.setState({roles: [...this.state.roles]})
             //如果是更新自己的权限，强制退出，清理内存，并跳转到登陆页面
-            if (role._id === memoryUtils.user.role_id) {
-                memoryUtils.user = {}
-                storageUtils.removeUser()
-                this.props.history.replace('/login')
+            if (role._id === this.props.user.role_id) {
+                this.props.logout()
             }
+            message.success('更新角色成功')
         }else {
             message.error('更新失败')
         }
@@ -212,3 +211,7 @@ export default class Role extends Component {
     }
 }
 
+export default connect(
+    state => ({user:state.user}),
+    {logout}
+)(Role)

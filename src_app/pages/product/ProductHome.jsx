@@ -10,7 +10,6 @@ import {
 import LinkButton from "../../components/linkButton";
 import {reqProducts,reqSearchProducts,reqUpdateStatus} from "../../api";
 import {PAGE_SIZE} from '../../utils/constant'
-import memoryUtils from "../../utils/memoryUtils";
 /*
 商品管理路由主界面
  */
@@ -93,9 +92,7 @@ export default class ProductHome extends Component {
 
     //跳转到详情页
     goToProductDetails = (product) => {
-        const {searchName} = this.state
         this.props.history.push('/product/details',{product})
-        memoryUtils.searchName = searchName
     }
 
     // 获取商品数据列表
@@ -106,10 +103,7 @@ export default class ProductHome extends Component {
 
         let result
 
-        //跳转详情页时保持搜索输入框的文字
-        if (memoryUtils.searchName !== '') {
-            this.setState({searchName: memoryUtils.searchName})
-        }
+
 
         if (searchName !== ''){
             // 如果searchName 不为空，发搜索商品搜索请求
