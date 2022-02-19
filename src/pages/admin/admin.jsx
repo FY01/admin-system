@@ -43,7 +43,8 @@ class Admin extends Component {
                             <Route path='/charts/bar' component={Bar} />
                             <Route path='/charts/line' component={Line} />
                             <Route path='/charts/pie' component={Pie} />
-                            <Route component={NotFound} />  //没有匹配到直接跳转到404页面
+                            {/* //没有匹配到直接跳转到404页面 */}
+                            <Route component={NotFound} />
                         </Switch>
                     </Content>
                     <Footer style={{ textAlign: "center", color: '#ccc' }}>
