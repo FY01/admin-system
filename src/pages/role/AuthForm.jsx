@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Proptypes from 'prop-types'
 /*
 设置角色权限
@@ -15,14 +15,14 @@ const { TreeNode } = Tree;
 
 export default class AuthForm extends Component {
     static propTypes = {
-        role:Proptypes.object
+        role: Proptypes.object
     }
 
-    constructor (props) {
+    constructor(props) {
         super(props)
 
         // 根据传入角色的menus生成初始状态
-        const {menus} = this.props.role
+        const { menus } = this.props.role
         this.state = {
             checkedKeys: menus
         }
@@ -33,15 +33,15 @@ export default class AuthForm extends Component {
 
     //动态生成树状图
     getTreeNodes = (menuList) => {
-        return menuList.reduce((pre,item) => {
+        return menuList.reduce((pre, item) => {
             pre.push(
                 <TreeNode title={item.title} key={item.key}>
-                    {item.children?this.getTreeNodes(item.children):null}
+                    {item.children ? this.getTreeNodes(item.children) : null}
                 </TreeNode>
             )
             // 必须return
             return pre
-        },[])
+        }, [])
     }
     //选择的回调
     onCheck = checkedKeys => {
@@ -60,13 +60,13 @@ export default class AuthForm extends Component {
     UNSAFE_componentWillReceiveProps(nextProps, nextContext) {
         // console.log(nextProps.role)
         const menus = nextProps.role.menus
-        this.setState({checkedKeys:menus})
+        this.setState({ checkedKeys: menus })
     }
 
     render() {
         // Form Item的布局，一共分为24格
-        const {role} = this.props
-        const {checkedKeys} = this.state
+        const { role } = this.props
+        const { checkedKeys } = this.state
         const formItemLayout = {
             labelCol: {
                 xs: { span: 24 },
@@ -80,18 +80,18 @@ export default class AuthForm extends Component {
         return (
             <div>
                 <Item label={'角色名称'} {...formItemLayout}>
-                    <Input value={role.name} disabled={true}/>
+                    <Input value={role.name} disabled={true} />
                 </Item>
-            <Tree
-                checkable
-                defaultExpandAll={true}
-                checkedKeys={checkedKeys}
-                onCheck={this.onCheck}
-            >
-                <TreeNode title="平台权限" key="all">
-                    {this.treeNodes}
-                </TreeNode>
-            </Tree>
+                <Tree
+                    checkable
+                    defaultExpandAll={true}
+                    checkedKeys={checkedKeys}
+                    onCheck={this.onCheck}
+                >
+                    <TreeNode title="平台权限" key="all">
+                        {this.treeNodes}
+                    </TreeNode>
+                </Tree>
             </div>
         );
     }

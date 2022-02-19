@@ -1,8 +1,17 @@
-import React, {Component} from 'react'
-import {Button, Row, Col} from 'antd'
-import {connect} from 'react-redux'
+/*
+ * @Descripttion: 
+ * @version: 
+ * @@Company: 
+ * @Author: FY01
+ * @Date: 2022-02-19 10:23:46
+ * @LastEditors: 
+ * @LastEditTime: 2022-02-19 10:31:37
+ */
+import React, { Component } from 'react'
+import { Button, Row, Col } from 'antd'
+import { connect } from 'react-redux'
 
-import {setHeadTitle} from '../../redux/actions'
+import { setHeadTitle } from '../../redux/actions'
 import './not-found.less'
 
 /*
@@ -36,5 +45,5 @@ class NotFound extends Component {
 
 export default connect(
   null,
-  {setHeadTitle}
+  { setHeadTitle }
 )(NotFound)
