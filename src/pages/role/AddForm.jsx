@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {Form, Input} from "antd";
+import React, { Component } from 'react';
+import { Form, Input } from "antd";
 import PropTypes from 'prop-types'
 /*
 添加分类的组件
@@ -11,7 +11,7 @@ const Item = Form.Item
 
 class AddForm extends Component {
     static propTypes = {
-        setForm:PropTypes.func.isRequired
+        setForm: PropTypes.func.isRequired
     }
 
     // 传递from对象给父组件
@@ -20,7 +20,7 @@ class AddForm extends Component {
     }
 
     render() {
-        const {getFieldDecorator} = this.props.form
+        const { getFieldDecorator } = this.props.form
         // Form Item的布局，一共分为24格
         const formItemLayout = {
             labelCol: {
@@ -36,9 +36,9 @@ class AddForm extends Component {
             <Form {...formItemLayout}>
                 <Item label={'角色名称'}>
                     {getFieldDecorator('roleName', {// 配置对象: 属性名是特定的一些名称
-                        initialValue:'',
+                        initialValue: '',
                         rules: [
-                            { required: true,whitespace:true, message: '角色名称不能为空!' },
+                            { required: true, whitespace: true, message: '角色名称不能为空!' },
                             { min: 2, message: '角色名称最少1位,最多8位!' },
                             { max: 8, message: '角色名称最少1位,最多8位!' },
                         ]

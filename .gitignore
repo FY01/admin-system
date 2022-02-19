@@ -2,6 +2,12 @@
 
 # dependencies
 /node_modules
+/src_test_react
+/src_test_react_redux
+/src_test_react_redux_thunk
+/src_test_react_redux_thunk_combine
+/src_mini_redux
+/src_mini_react_redux
 /.pnp
 .pnp.js
 /.idea
